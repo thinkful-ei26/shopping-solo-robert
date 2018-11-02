@@ -25,6 +25,9 @@ function generateItemElement(item, itemIndex, template) {
         <button class="shopping-item-delete js-item-delete">
             <span class="button-label">delete</span>
         </button>
+        <button class="shopping-item-edit js-item-edit">
+        <span class="button-label">edit</span>
+        </button>
       </div>
     </li>`;
 }
@@ -41,14 +44,12 @@ function generateShoppingItemsString(shoppingList) {
 
 function renderShoppingList() {
   // render the shopping list in the DOM
-  console.log('`renderShoppingList` ran');
+  //console.log('`renderShoppingList` ran');
   let filteredItems = [ ...STORE.items ];
-
   if (STORE.hideCompleted) {
-    filteredItems = filteredItems.filter(item => !item.checked);
+    filteredItems = filteredItems.filter(items => !items.checked);
   }
-
-  const shoppingListItemsString = generateShoppingItemsString(STORE.items);
+  const shoppingListItemsString = generateShoppingItemsString(filteredItems);
 
   // insert that HTML into the DOM
   $('.js-shopping-list').html(shoppingListItemsString);
@@ -58,6 +59,35 @@ function renderShoppingList() {
 function addItemToShoppingList(itemName) {
   console.log(`Adding "${itemName}" to shopping list`);
   STORE.items.push({name: itemName, checked: false});
+}
+
+function searchItemInShoppingList(itemName) {
+  console.log(`Filtering only the "${itemName}" to the shopping list`);
+  let searchList = [...STORE.items];
+  console.log(searchList);
+  if(STORE.items[name] === itemName) {
+    searchList = searchList.filter(function(name) {
+      name === itemName;
+    });
+    //console.log(searchList);
+  }
+  console.log(searchList);
+
+  // let filteredItems = [ ...STORE.items ];
+  // if (STORE.hideCompleted) {
+  //   filteredItems = filteredItems.filter(items => !items.checked);
+  // }
+}
+
+function handleSearchItemSubmit() {
+  $('#js-search-for-item').submit(function(event) {
+    event.preventDefault();
+    console.log('a search has been submitted');
+    const searchedItem = $('.js-search-for-item').val();
+    $('.js-search-for-item').val('');
+    searchItemInShoppingList(searchedItem);
+    renderShoppingList();
+  });
 }
 
 function handleNewItemSubmit() {
@@ -120,6 +150,21 @@ function handleDeleteItemClicked() {
   });
 }
 
+function editListItem(itemIndex) {
+
+}
+
+function handleEditItemClicked () {
+  $('.js-shopping-list').on('click', '.js-item-edit', event => {
+    // get the index of the item in STORE
+    const itemIndex = getItemIndexFromElement(event.currentTarget);
+    // edit the item
+    editListItem(itemIndex);
+    // render the updated shopping list
+    renderShoppingList();
+  });
+}
+
 function toggleHideItems() {
   STORE.hideCompleted = !STORE.hideCompleted;
 }
@@ -142,6 +187,7 @@ function handleShoppingList() {
   handleItemCheckClicked();
   handleDeleteItemClicked();
   handleToggleHideItemFilter();
+  handleSearchItemSubmit();
 }
 
 // when the page loads, call `handleShoppingList`
